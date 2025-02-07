@@ -1,6 +1,7 @@
 import Pet from "../pet/pet.model.js";
 import Appointment from "../appointment/appointment.model.js";
 import { parse } from "date-fns";
+import { get } from "http";
 
 export const saveAppointment = async (req, res) => {
   try {
@@ -56,3 +57,47 @@ export const saveAppointment = async (req, res) => {
     }); 
   }
 };
+
+export const getAppointments = async (req, res) =>{
+  try{
+    const {uid} = req.params;
+    const query = { user: uid };
+    const [total, appointments] = await Promise.all([
+      Appointment.countDocuments(query),
+      Appointment.find(query)
+
+  ])
+  return res.status(200).json({
+    success: true,
+    total,
+    appointments
+})
+  }catch(err){
+    return res.status(500).json({
+      success: false,
+      message: "Error al listar las l¿citas del usuario",
+      error: err.messagge
+    })
+  }
+}
+ 
+
+export const cancelarCitas = async (req, res) => {
+    try{
+        const { id } = req.params
+        
+        const appointment = await Appointment.findByIdAndUpdate(id, {status: false}, {new: true})
+
+        return res.status(200).json({
+            success: true,
+            message: "cita eliminada",
+            appointment
+        })
+    }catch(err){
+        return res.status(500).json({
+            success: false,
+            message: "Error al cancerlar la cita",
+            error: err.message
+        })
+    }
+}
