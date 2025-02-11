@@ -1,7 +1,6 @@
 import Pet from "../pet/pet.model.js";
 import Appointment from "../appointment/appointment.model.js";
-import { parse } from "date-fns";
-import { get } from "http";
+
 
 export const saveAppointment = async (req, res) => {
   try {
@@ -80,13 +79,12 @@ export const getAppointments = async (req, res) =>{
     })
   }
 }
- 
 
 export const cancelarCitas = async (req, res) => {
     try{
-        const { id } = req.params
+        const { uid } = req.params
         
-        const appointment = await Appointment.findByIdAndUpdate(id, {status: false}, {new: true})
+        const appointment = await Appointment.findByIdAndUpdate(uid, {status: "CANCELLED"}, {new: true})
 
         return res.status(200).json({
             success: true,
@@ -101,3 +99,23 @@ export const cancelarCitas = async (req, res) => {
         })
     }
 }
+
+export const actualizarCita =async (req, res) => {
+  try{
+    const {uid} = req.params
+    const data = req.body
+    const appointment = await Appointment.findByIdAndUpdate(uid, data, {new:true})
+    return res.status(200).json({
+      success: true,
+      message: "Cita actualizada",
+      appointment
+    })
+  }catch(err){
+    res.status(500).json({
+      success: false,
+      message: "Error al actualizar la cita",
+      error: err.message
+  })
+  }
+}
+

@@ -58,6 +58,10 @@ JWT_SECRET=<tu_secreto_jwt>
   - **URL:** `/adoptionSystem/v1/user/`
   - **Método:** `GET`
 
+- **Listar Citas del Usuario**
+  - **URL:** `/adoptionSystem/v1/user/citasPorUsuario/:uid`
+  - **Método:** `GET`
+
 - **Actualizar Contraseña del Usuario**
   - **URL:** `/adoptionSystem/v1/user/updatePassword/:uid`
   - **Método:** `PATCH`
@@ -65,6 +69,16 @@ JWT_SECRET=<tu_secreto_jwt>
     ```json
     {
       "newPassword": "string"
+    }
+    ```
+
+- **Actualizar Foto del Usuario**
+  - **URL:** `/adoptionSystem/v1/user/updateProfilePicture/:uid`
+  - **Método:** `PATCH`
+  - **Cuerpo:**
+    ```form-data
+    {
+      "profilePicture": "string"
     }
     ```
 
@@ -121,21 +135,16 @@ JWT_SECRET=<tu_secreto_jwt>
     }
     ```
 
-## Funcionalidades Adicionales
+- **Actualizar Cita**
+  - **URL:** `/adoptionSystem/v1/appointment/actualizarCita/:uid`
+  - **Método:** `PATCH`
+  - **Cuerpo:**
+    ```json
+    {
+      "date": "2023-10-15T10:00:00Z",
+    }
+    ```
 
-Las siguientes funcionalidades necesitan ser desarrolladas:
-
-1. **Actualizar Foto del Usuario**
-   - Descripción: Implementar funcionalidad para actualizar la foto de perfil del usuario.
-
-2. **Listar Citas**
-   - Descripción: Implementar funcionalidad para listar todas las citas de un usuario.
-
-3. **Actualizar Cita**
-   - Descripción: Implementar funcionalidad para actualizar una cita existente.
-
-4. **Cancelar Cita**
-   - Descripción: Implementar funcionalidad para cancelar una cita existente.
-
-5. **Entrega**
-   - Funcionalidades deben ser parte del código fuente y ser entregadas en tiempo y forma indicada en clase.
+- **Cancelar Cita**
+  - **URL:** `/adoptionSystem/v1/appointment/cancelarCita/:uid`
+  - **Método:** `DELETE`

@@ -1,5 +1,11 @@
 import { hash } from "argon2";
 import User from "./user.model.js"
+import Appointment from "../appointment/appointment.model.js"
+import fs from "fs/promises"
+import {join, dirname} from "path"
+import { fileURLToPath } from "url"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export const getUserById = async (req, res) => {
     try{
@@ -126,4 +132,70 @@ export const updateUser = async (req, res) => {
             error: err.message
         });
     }
+}
+
+export const citasPorUsuario = async (req, res) => {
+    try {
+    const { uid } = req.params;
+
+    if (!uid) {
+        return res.status(400).json({
+        success: false,
+        message: "No es un usuario valido",	
+    });
+    }
+
+    const query = { user: uid };  
+    
+    const [total, appointments] = await Promise.all([
+        Appointment.countDocuments(query),
+        Appointment.find(query).lean(),
+    ]);
+    return res.status(200).json({
+        success: true,
+        total,
+        appointments,
+    });
+
+    } catch (err) {
+    return res.status(500).json({
+        success: false,
+        message: "Error al listar las citas del usuario",
+        error: err.message
+    })
+    }
+}
+
+export const updateProfilePicture = async (req, res) =>{
+    try{
+        const {uid} = req.params
+        let newProfilePicture = req.file ? req.file.filename : null
+
+        const user = await User.findById(uid)
+        if(!newProfilePicture){
+            return res.status(400).json({
+                success: false,
+                msg: "No se proporciono ningun archivo"
+            })
+        }
+        if(user.profilePicture){
+            const oldProfilePicture = join(__dirname, "../../public/uploads/profile-pictures", user.profilePicture)
+            await fs.unlink(oldProfilePicture)
+        }
+        user.profilePicture = newProfilePicture
+        await user.save()
+
+        res.status(200).json({
+            success: true,
+            message: "Foto de perfil actualizada",
+            user
+        })
+        
+    }catch(err){
+        return res.status(500).json({
+            success: false,
+            msg: "Error al agregar el usuario",
+            error: err.message
+     })
+    }
 }
